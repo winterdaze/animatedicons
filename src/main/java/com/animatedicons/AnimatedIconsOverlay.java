@@ -3,6 +3,8 @@ package com.animatedicons;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.util.HashMap;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.swing.ImageIcon;
 
@@ -13,6 +15,7 @@ import net.runelite.client.ui.overlay.WidgetItemOverlay;
 @Slf4j
 public class AnimatedIconsOverlay extends WidgetItemOverlay
 {
+    Map<Integer, Image> images = new HashMap<>();
     @Inject
     private AnimatedIconsOverlay()
     {
@@ -28,8 +31,17 @@ public class AnimatedIconsOverlay extends WidgetItemOverlay
         if (icon != null)
         {
             Rectangle bounds = itemWidget.getCanvasBounds();
-            int defaultItemID = icon.getDefaultID();
-            final Image animatedIcon = new ImageIcon(AnimatedIconsPlugin.class.getClassLoader().getResource(defaultItemID + ".gif")).getImage();
+            Integer defaultItemID = new Integer(icon.getDefaultID());
+            Image animatedIcon;
+            if (images.containsKey(defaultItemID))
+            {
+                animatedIcon = images.get(defaultItemID);
+            }
+            else
+            {
+                animatedIcon = new ImageIcon(AnimatedIconsPlugin.class.getClassLoader().getResource(defaultItemID.toString() + ".gif")).getImage();
+                images.put(defaultItemID, animatedIcon);
+            }
             graphics.drawImage(animatedIcon, (int) bounds.getX(), (int) bounds.getY(), null);
         }
     }
